@@ -1,0 +1,9 @@
+.DS_Store
+.build/
+build/
+CCUsageWidget.app/
+*.xcuserdata/
+DerivedData/
+*.swp
+*.tmp
+/tmp/cc-widget-*.json
