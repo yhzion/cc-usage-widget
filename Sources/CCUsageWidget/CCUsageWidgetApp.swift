@@ -470,7 +470,6 @@ struct ContentView: View {
         .frame(width: 240)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 20))
-        .shadow(color: Color.black.opacity(0.15), radius: 24, x: 0, y: 10)
         .onAppear { vm.startAutoRefresh() }
         .onDisappear { vm.stopAutoRefresh() }
     }
@@ -499,7 +498,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 240, height: 260),
-            styleMask: [.nonactivatingPanel, .closable, .miniaturizable, .resizable],
+            styleMask: [.nonactivatingPanel, .borderless],
             backing: .buffered,
             defer: false
         )
@@ -510,6 +509,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         panel.isMovable = true
         panel.isMovableByWindowBackground = true
         panel.contentView = contentView
+        contentView.wantsLayer = true
+        contentView.layer?.cornerRadius = 20
+        contentView.layer?.masksToBounds = true
+        contentView.layer?.backgroundColor = NSColor.clear.cgColor
+        panel.hasShadow = true
         panel.titleVisibility = .hidden
         panel.titlebarAppearsTransparent = true
         panel.standardWindowButton(.closeButton)?.isHidden = true
