@@ -1,63 +1,82 @@
-# CCUsageWidget — macOS Desktop Widget (Floating Panel)
+# CCUsageWidget
 
-Claude Code의 현재 사용량(5시간·7일 윈도우)과 플랜 상태를 **macOS 바탕화면에 떠 있는 위젯 스타일 패널**로 보여줍니다.
+A lightweight macOS floating panel widget that displays your **Claude Code** API usage and rate limit status in real-time.
 
-> ⚠️ `/api/oauth/usage`는 Anthropic의 **비공식 내부 엔드포인트**입니다. 언제 변경될 수 있으니 참고용으로만 사용하세요.
+![widget](https://github.com/user-attachments/assets/placeholder.png)
 
-## 기능
+## Features
 
-- **5시간** / **7일** 사용률 게이지
-- **Sonnet / Opus** 모델별 7일 사용량
-- 다음 리셋 시간 표시
-- Extra Credits 상태
-- 60초마다 자동 새로고침
-- 위젯 스타일 디자인 (둥근 모서리 + 그림자 + 투명 배경)
-- 항상 위에 떠 있음 (어떤 Space에서도 보임)
+| Feature | Description |
+|---------|-------------|
+| **Rate Limit Gauges** | 5-hour, 7-day, and Sonnet usage rings |
+| **Live Reset Countdown** | Hourglass-style timer showing time until next rate limit reset |
+| **Smart Caching** | 10-minute cache to avoid hitting API rate limits |
+| **Auto-Refresh** | Refreshes every 10 minutes automatically |
+| **Single Instance** | Only one instance runs at a time |
+| **Login Item** | Optional "Launch at Login" via right-click menu |
 
-## 요구사항
+## Requirements
 
-- macOS 14 (Sonoma) 이상
-- Claude Code OAuth 로그인 상태 (`claude auth login`)
-- Xcode Command Line Tools (`swift` 명령)
+- macOS 14 (Sonoma) or later
+- Claude Code authenticated via `claude auth login`
+- Swift 5.9+
 
-## 빌드 & 실행
+## Install
+
+### From Source
 
 ```bash
+git clone https://github.com/yhzion/cc-usage-widget.git
 cd cc-usage-widget
-swift build
-
-# 실행
-.build/debug/cc-usage-widget
+swift build -c release
+.build/release/cc-usage-widget
 ```
 
-## 사용법
+### Build as .app
 
-### 화면 배치
-- 실행하면 화면 **우측 상단**에 패널이 나타납니다.
-- 드래그로 원하는 위치로 이동할 수 있습니다.
-- **Close 버튼**은 숨겨져 있으며, 패널을 **우클릭**하면 컨텍스트 메뉴에서 종료할 수 있습니다.
+```bash
+./package-app.sh
+open CCUsageWidget.app
+```
 
-### 종료
-- 패널 **우클릭** → 컨텍스트 메뉴에서 종료
-- 또는 터미널에서 `killall cc-usage-widget`
+> **Note:** Since the app is ad-hoc signed, you may need to bypass Gatekeeper on first launch:
+> ```bash
+> xattr -cr CCUsageWidget.app
+> ```
 
-## 프로젝트 구조
+## Usage
+
+- The widget appears as a floating panel on your desktop
+- Drag to reposition
+- Right-click the **⋮** menu for "Launch at Login" or "Quit"
+
+## How It Works
+
+1. Reads your OAuth token from the macOS Keychain (`Claude Code-credentials`)
+2. Calls Anthropic's internal `/api/oauth/usage` endpoint
+3. Caches the response for 10 minutes to prevent rate limiting
+4. Displays live countdown to your next rate limit reset
+
+## Project Structure
 
 ```
 cc-usage-widget/
-├── Package.swift                        # Swift Package
-├── Sources/CCUsageWidget/main.swift     # Floating Panel + SwiftUI
+├── Package.swift                          # Swift Package Manager
+├── Sources/
+│   └── CCUsageWidget/
+│       ├── CCUsageWidgetApp.swift         # Main app
+│       └── Resources/
+│           └── logo.ico                   # Claude favicon
+├── build.sh                               # Build script
+├── package-app.sh                         # Package as .app
+├── .gitignore
 └── README.md
 ```
 
-## 인증 방식
+## Disclaimer
 
-- macOS Keychain의 `"Claude Code-credentials"` 항목에서 OAuth `accessToken` 읽기
-- → `/api/oauth/usage` 호출
+`/api/oauth/usage` is an **unofficial internal endpoint** used by Claude Code. It may change or stop working without notice. This tool is for personal reference only.
 
-`claude auth login`이 되어 있지 않으면 **"로그인 필요"** 메시지가 표시됩니다.
+## License
 
-## 주의
-
-- 위젯이 항상 위에 떠 있으므로 작업 공간을 가릴 수 있습니다 — 원하는 위치로 드래그해서 배치하세요.
-- 코드 서명 없이 실행 가능합니다 (Ad-hoc).
+MIT License — see [LICENSE](LICENSE) for details.

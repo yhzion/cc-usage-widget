@@ -344,12 +344,6 @@ struct UsageRing: View {
 struct HourglassCard: View {
     let remaining: TimeInterval?
 
-    private var ratio: Double? {
-        guard let r = remaining else { return nil }
-        let fiveHours: Double = 5 * 60 * 60
-        return min(max(r / fiveHours, 0), 1)
-    }
-
     private var displayText: String {
         guard let r = remaining, r > 0 else { return "리셋 중…" }
         let total = Int(r)
@@ -384,29 +378,6 @@ struct HourglassCard: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .contentTransition(.numericText())
 
-            if let ratio = ratio {
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(Color.white.opacity(0.1))
-                            .frame(height: 6)
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.9, green: 0.7, blue: 0.3),
-                                        Color(red: 1.0, green: 0.5, blue: 0.2)
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(width: geo.size.width * CGFloat(ratio), height: 6)
-                            .animation(.linear(duration: 0.5), value: ratio)
-                    }
-                }
-                .frame(height: 6)
-            }
         }
         .padding(10)
         .background(Color.primary.opacity(0.05))
